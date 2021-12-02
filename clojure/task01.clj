@@ -1,0 +1,10 @@
+(def res 0)
+(def input_vals (with-open [rdr (clojure.java.io/reader "../input/input01.txt")] (reduce conj [] (line-seq rdr))))
+(doseq [n (range 1 (count input_vals))]
+  (def prev (read-string (nth input_vals (- n 1))))
+  (def cur (read-string (nth input_vals n)))
+  (if (> cur prev)
+    (def res (+ res 1))
+    (println "False!"))
+)
+(println res)
