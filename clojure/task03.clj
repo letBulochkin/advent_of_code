@@ -15,3 +15,29 @@
                        (vector (str gamma_rate_str "0") (str epsilon_rate_str "1")))) ["", ""] turned_vals))
 
 (println (apply * (mapv #(Integer/parseInt % 2) rates))) ; 3009600
+
+(defn common_value [way frqs]
+  (if (= (get frqs "1") (get frqs "0"))
+    (case way 
+      "most" (str 1)
+      "least" (str 0))
+    (case way
+      "most" (key (apply max-key val frqs))
+      "least" (key (apply min-key val frqs)))))
+
+(defn matching_indexes [column value]
+  (keep-indexed (fn [i v] (if (= value v) i)) column))
+
+(defn rating_calculator [vals iteration way]
+  (let [turned_vals (apply mapv list vals)
+        line (nth turned_vals iteration)
+        frq (frequencies line)
+        indexes (matching_indexes line (common_value way frq))]
+    (if (> (count indexes) 1)
+      (rating_calculator (reduce (fn [vec ind] (conj vec (nth vals ind))) [] indexes) (+ iteration 1) way)
+      (nth vals (nth indexes 0)))))
+
+(def o2_gen_rating (str/join (rating_calculator input_vals 0 "most")))
+(def co2_scrub_rating (str/join (rating_calculator input_vals 0 "least")))
+
+(println (apply * (mapv #(Integer/parseInt % 2) [o2_gen_rating co2_scrub_rating]))) ; 6940518
